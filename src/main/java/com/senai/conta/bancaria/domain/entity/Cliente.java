@@ -1,19 +1,19 @@
 package com.senai.conta.bancaria.domain.entity;
 
+import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import lombok.Data;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 public class Cliente {
-    String nome;
-    Long cpf;
-
-@OneToMany (mappedBy = "conta")
-List<Conta> contas;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nome;
+    private String cpf;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Conta> contas = new ArrayList<>();
 
 }
