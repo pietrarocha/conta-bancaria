@@ -1,4 +1,4 @@
-package com.senai.conta.bancaria.entity;
+package com.senai.conta.bancaria.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
