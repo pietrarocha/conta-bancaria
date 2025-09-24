@@ -13,16 +13,6 @@ public record ClienteRegistroDTO(
 
 ) {
 
-    public static ClienteRegistroDTO fromEntity(Cliente cliente) {
-        if (cliente == null) {
-            return null;
-            return new ClienteRegistroDTO(
-                    cliente.getNome(),
-                    cliente.getCpf(),
-                    cliente.getContas() != null ? cliente.getContas().getFirst().getId() : null
-            );
-        }
-
         public Cliente toEntity (){
             return Cliente.builder()
                     .ativo(true)

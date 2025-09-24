@@ -23,8 +23,15 @@ public ClienteResponseDTO registrarClienteOuAnexarConta(ClienteRegistroDTO dto) 
     var contas = cliente.getContas();
     var novaConta = dto.contaDTO().toEntity(cliente);
 
+    boolean jaTemTipo = contas.stream()
+            .anyMatch(c -> c.getClass().equals(novaConta.getClass()) && c.isAtiva());
 
-    return null;
+    if(jaTemTipo)
+        throw new RuntimeException("Cliente já possui uma conta ativa do tipo ");
+
+    cliente.getContas().add(novaConta);
+
+  return ClienteResponseDTO.fromEntity(repository.save(cliente));
 
   }
 
