@@ -7,6 +7,8 @@ import com.senai.conta.bancaria.domain.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
@@ -35,4 +37,10 @@ public ClienteResponseDTO registrarClienteOuAnexarConta(ClienteRegistroDTO dto) 
 
   }
 
+
+    public List<ClienteResponseDTO> listarClientesAtivos() {
+    return repository.findAllByAtivo().stream()
+            .map(ClienteResponseDTO::fromEntity)
+            .toList();
+    }
 }

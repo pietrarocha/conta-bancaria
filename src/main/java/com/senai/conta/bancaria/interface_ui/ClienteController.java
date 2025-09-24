@@ -6,10 +6,10 @@ import com.senai.conta.bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta.bancaria.application.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/cliente")
@@ -21,9 +21,15 @@ public class ClienteController {
 
 
     @PostMapping
-   public ClienteResponseDTO registrarCliente(@RequestBody ClienteRegistroDTO dto) {
-        return service.registrarClienteOuAnexarConta(dto);
+   public ResponseEntity<ClienteResponseDTO> registrarCliente(@RequestBody ClienteRegistroDTO dto) {
+        ClienteResponseDTO novoCliente = service.registrarClienteOuAnexarConta(dto);
+        return ResponseEntity.created(
 
-
+                URI.create("/api/cliente/cpf/" + novoCliente.cpf())
+        ).body(novoCliente);
+    }
+    @GetMapping
+    public ResponseEntity<ClienteResponseDTO> listarClientesAtivos(){
+        return ResponseEntity.ok(service.listarClientesAtivos());
     }
 }
