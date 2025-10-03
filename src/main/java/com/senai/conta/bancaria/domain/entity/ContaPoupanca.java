@@ -17,13 +17,18 @@ import java.math.BigDecimal;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ContaPoupanca extends Conta{
 
+public class ContaPoupanca extends Conta{
     @Column (precision = 10, scale= 4)
     private BigDecimal rendimento;
 
     @Override
     public String getTipo() {
         return "POUPANCA";
+    }
+
+    public void aplicarRendimento() {
+        var ganho = getSaldo().multiply(rendimento);
+        setSaldo(getSaldo().add(ganho));
     }
 }
