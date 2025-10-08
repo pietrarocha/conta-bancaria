@@ -1,7 +1,8 @@
 package com.senai.conta.bancaria.domain.exceptions;
 
 public class ValoresNegativosException extends RuntimeException {
-    public ValoresNegativosException(String message) {
-        super("Não é possível realizar a operação: " + "operacao" + "com valores negativos!");
+    public ValoresNegativosException(String operacao) {
+        super("Não é possível realizar a operação de "
+                + operacao + " com valores negativos.");
     }
 }

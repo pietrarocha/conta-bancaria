@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Table(
-        name = "cliente" ,
-        uniqueConstraints = @UniqueConstraint(name = "uk_cliente_cpf" , columnNames = "cpf")
+        name = "cliente",
+        uniqueConstraints = @UniqueConstraint(name = "uk_cliente_cpf", columnNames = "cpf")
 )
 public class Cliente {
 
@@ -23,18 +24,16 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false , length = 120)
+    @Column(nullable = false, length = 120)
     private String nome;
 
-
-    @Column(nullable = false , length = 11)
+    @Column(nullable = false, length = 11)
     private String cpf;
 
-    @OneToMany(mappedBy = "cliente" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Conta> contas;
 
-
-    @Column (nullable = false)
+    @Column(nullable = false)
     private Boolean ativo;
 
 }

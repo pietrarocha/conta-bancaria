@@ -5,16 +5,10 @@ import com.senai.conta.bancaria.domain.entity.Cliente;
 import java.util.List;
 
 public record ClienteResponseDTO(
-
         String id,
-
         String nome,
-
         String cpf,
-
         List<ContaResumoDTO> contas
-
-
 ) {
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
         List<ContaResumoDTO> contas = cliente.getContas().stream()
@@ -26,7 +20,5 @@ public record ClienteResponseDTO(
                 cliente.getCpf(),
                 contas
         );
-
-
     }
 }

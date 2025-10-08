@@ -6,22 +6,16 @@ import com.senai.conta.bancaria.domain.entity.Conta;
 import java.util.ArrayList;
 
 public record ClienteRegistroDTO(
-
-    String nome,
-    String cpf,
-    ContaResumoDTO contaDTO
-
+        String nome,
+        String cpf,
+        ContaResumoDTO contaDTO
 ) {
-
-        public Cliente toEntity (){
-            return Cliente.builder()
-                    .ativo(true)
-                    .nome(this.nome)
-                    .cpf(this.cpf)
-                    .contas(new ArrayList<Conta>())
-                    .build();
-        }
+    public Cliente toEntity() {
+        return Cliente.builder()
+                .ativo(true)
+                .nome(this.nome)
+                .cpf(this.cpf)
+                .contas(new ArrayList<Conta>())
+                .build();
     }
-
-
-
+}

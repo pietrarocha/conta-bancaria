@@ -11,21 +11,23 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
+
 @Entity
 @DiscriminatorValue("POUPANCA")
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-
 public class ContaPoupanca extends Conta{
-    @Column (precision = 10, scale= 4)
+
+    @Column(precision=10, scale=2)
     private BigDecimal rendimento;
 
     @Override
     public String getTipo() {
         return "POUPANCA";
     }
+
 
     public void aplicarRendimento() {
         var ganho = getSaldo().multiply(rendimento);

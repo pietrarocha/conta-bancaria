@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClienteRepository extends JpaRepository<Cliente,String> {
-
     Optional<Cliente> findByCpfAndAtivoTrue(String cpf);
 
     List<Cliente> findAllByAtivoTrue();

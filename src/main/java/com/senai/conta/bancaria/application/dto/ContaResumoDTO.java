@@ -9,11 +9,8 @@ import com.senai.conta.bancaria.domain.exceptions.TipoDeContaInvalidaException;
 import java.math.BigDecimal;
 
 public record ContaResumoDTO(
-
         String numero,
-
         String tipo,
-
         BigDecimal saldo
 ) {
     public Conta toEntity(Cliente cliente){
@@ -23,7 +20,7 @@ public record ContaResumoDTO(
                     .saldo(this.saldo)
                     .ativa(true)
                     .cliente(cliente)
-                    .limite(new BigDecimal("500.00"))
+                    .limite(new BigDecimal("500.0"))
                     .taxa(new BigDecimal("0.05"))
                     .build();
         } else if ("POUPANCA".equalsIgnoreCase(tipo)){
@@ -35,16 +32,13 @@ public record ContaResumoDTO(
                     .cliente(cliente)
                     .build();
         }
-       throw new TipoDeContaInvalidaException();
-        return null;
+        throw  new TipoDeContaInvalidaException();
     }
-
-    public static ContaResumoDTO fromEntity(Conta conta){
+    public static ContaResumoDTO fromEntity(Conta c) {
         return new ContaResumoDTO(
-                conta.getNumero(),
-                conta.getTipo(),
-                conta.getSaldo()
+                c.getNumero(),
+                c.getTipo(),
+                c.getSaldo()
         );
     }
-
 }
