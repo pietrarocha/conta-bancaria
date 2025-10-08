@@ -1,4 +1,4 @@
-package com.senai.conta.bancaria.interface_ui;
+package com.senai.conta.bancaria.interface_ui.controller;
 
 
 import com.senai.conta.bancaria.application.dto.ContaAtualizacaoDTO;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 @RestController
 @RequestMapping("/api/conta")
