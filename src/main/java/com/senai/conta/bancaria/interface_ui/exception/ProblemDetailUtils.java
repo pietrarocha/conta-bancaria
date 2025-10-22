@@ -6,7 +6,8 @@ import org.springframework.http.ProblemDetail;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-public class ProblemDetailsUtils {
+public class ProblemDetailUtils {
+
     public static ProblemDetail buildProblem(
             HttpStatus status,
             String title,
@@ -22,4 +23,3 @@ public class ProblemDetailsUtils {
         return problem;
     }
 }
-

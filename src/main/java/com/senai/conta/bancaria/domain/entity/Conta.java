@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

@@ -1,13 +1,29 @@
 package com.senai.conta.bancaria.application.dto;
 
 import com.senai.conta.bancaria.domain.entity.Cliente;
-
+import org.hibernate.validator.constraints.br.CPF; // Importa a anotação @CPF
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record ClienteResponseDTO(
+        @NotBlank(message = "ID não pode ser vazio")
         String id,
+
+        @NotBlank(message = "Nome não pode ser vazio")
+        @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
         String nome,
+
+        @NotBlank(message = "E-mail não pode ser vazio")
+        String email,
+
+        @NotBlank(message = "E-mail não pode ser vazio")
+        String senha,
+
+        @NotBlank(message = "CPF não pode ser vazio")
+        @CPF(message = "O CPF fornecido não é válido")
         String cpf,
+
         List<ContaResumoDTO> contas
 ) {
     public static ClienteResponseDTO fromEntity(Cliente cliente) {
@@ -17,6 +33,8 @@ public record ClienteResponseDTO(
         return new ClienteResponseDTO(
                 cliente.getId(),
                 cliente.getNome(),
+                cliente.getEmail(),
+                cliente.getSenha(),
                 cliente.getCpf(),
                 contas
         );

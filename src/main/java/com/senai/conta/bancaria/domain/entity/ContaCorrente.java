@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-
 @Entity
 @DiscriminatorValue("CORRENTE")
 @Data

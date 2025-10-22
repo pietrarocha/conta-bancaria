@@ -1,6 +1,6 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import com.senai.conta.bancaria.enums.Role;
+import com.senai.conta.bancaria.domain.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED) // estratégia JOINED
-public class Usuario {
+public abstract class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,9 +27,8 @@ public class Usuario {
     @Column(nullable = false)
     protected String nome;
 
-    @NotBlank
     @Column(nullable = false, unique = true, length = 14)
-    protected String cpf;
+    protected String cpf; // formato "000.000.000-00" (validação pode ser ampliada)
 
     @Email
     @NotBlank

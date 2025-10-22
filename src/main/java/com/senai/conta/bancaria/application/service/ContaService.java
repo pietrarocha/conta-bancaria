@@ -11,9 +11,9 @@ import com.senai.conta.bancaria.domain.entity.ContaPoupanca;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.exceptions.RendimentoInvalidoException;
 import com.senai.conta.bancaria.domain.repository.ContaRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;

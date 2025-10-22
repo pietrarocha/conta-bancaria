@@ -1,7 +1,7 @@
 package com.senai.conta.bancaria.application.dto;
 
 import com.senai.conta.bancaria.domain.entity.Gerente;
-import com.senai.conta.bancaria.enums.Role;
+import com.senai.conta.bancaria.domain.enums.Role;
 import lombok.Builder;
 
 @Builder
@@ -14,14 +14,14 @@ public record GerenteDTO(
         Boolean ativo,
         Role role
 ) {
-    public static GerenteDTO fromEntity(Gerente professor) {
+    public static GerenteDTO fromEntity(Gerente gerente) {
         return GerenteDTO.builder()
-                .id(professor.getId())
-                .nome(professor.getNome())
-                .cpf(professor.getCpf())
-                .email(professor.getEmail())
-                .ativo(professor.isAtivo())
-                .role(professor.getRole())
+                .id(gerente.getId())
+                .nome(gerente.getNome())
+                .cpf(gerente.getCpf())
+                .email(gerente.getEmail())
+                .ativo(gerente.isAtivo())
+                .role(gerente.getRole())
                 .build();
     }
 
@@ -33,7 +33,7 @@ public record GerenteDTO(
                 .email(this.email)
                 .senha(this.senha)
                 .ativo(this.ativo != null ? this.ativo : true)
-                .role(this.role != null ? this.role : Role.GERENTE)
+                .role(this.role != null ? this.role : Role.CLIENTE)
                 .build();
     }
 

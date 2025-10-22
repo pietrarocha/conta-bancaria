@@ -2,26 +2,27 @@ package com.senai.conta.bancaria.application.service;
 
 
 import com.senai.conta.bancaria.application.dto.ClienteRegistroDTO;
-import com.senai.conta.bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta.bancaria.domain.entity.Cliente;
 import com.senai.conta.bancaria.domain.exceptions.ContaMesmoTipoException;
+import com.senai.conta.bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional
 public class ClienteService {
-
     private final ClienteRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClienteResponseDTO registrarClienteOuAnexarConta(ClienteRegistroDTO dto){
 
+    public ClienteResponseDTO registarClienteOuAnexarConta(ClienteRegistroDTO dto) {
         var cliente = repository.findByCpfAndAtivoTrue(dto.cpf()).orElseGet(
                 () -> repository.save(dto.toEntity())
         );
@@ -36,6 +37,8 @@ public class ClienteService {
             throw new ContaMesmoTipoException();
 
         cliente.getContas().add(novaConta);
+
+        cliente.setSenha(passwordEncoder.encode(dto.senha()));
 
         return ClienteResponseDTO.fromEntity(repository.save(cliente));
     }
@@ -57,15 +60,15 @@ public class ClienteService {
         cliente.setNome(dto.nome());
         cliente.setCpf(dto.cpf());
 
-
-        return ClienteResponseDTO.fromEntity(cliente);
+        return ClienteResponseDTO.fromEntity(repository.save(cliente));
     }
 
     public void deletarCliente(String cpf) {
         var cliente = buscarPorCpfClienteAtivo(cpf);
+
         cliente.setAtivo(false);
         cliente.getContas().forEach(
-                conta-> conta.setAtiva(false)
+                conta -> conta.setAtiva(false)
         );
         repository.save(cliente);
     }
