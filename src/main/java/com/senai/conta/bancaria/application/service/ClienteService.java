@@ -1,10 +1,8 @@
 package com.senai.conta.bancaria.application.service;
-
-
 import com.senai.conta.bancaria.application.dto.ClienteRegistroDTO;
+import com.senai.conta.bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta.bancaria.domain.entity.Cliente;
 import com.senai.conta.bancaria.domain.exceptions.ContaMesmoTipoException;
-import com.senai.conta.bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,34 +12,40 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ClienteService {
+
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
 
 
     public ClienteResponseDTO registarClienteOuAnexarConta(ClienteRegistroDTO dto) {
-        var cliente = repository.findByCpfAndAtivoTrue(dto.cpf()).orElseGet(
-                () -> repository.save(dto.toEntity())
-        );
+        // Busca cliente ativo pelo CPF ou cria um novo cliente
+        var cliente = repository.findByCpfAndAtivoTrue(dto.cpf())
+                .orElseGet(() -> repository.save(dto.toEntity()));
 
+        // Converte a conta do DTO em entidade vinculada ao cliente
         var contas = cliente.getContas();
         var novaConta = dto.contaDTO().toEntity(cliente);
 
+        // Verifica se já existe conta ativa do mesmo tipo
         boolean jaTemTipo = contas.stream()
                 .anyMatch(c -> c.getClass().equals(novaConta.getClass()) && c.isAtiva());
+        if (jaTemTipo) throw new ContaMesmoTipoException();
 
-        if(jaTemTipo)
-            throw new ContaMesmoTipoException();
-
+        // Adiciona a nova conta
         cliente.getContas().add(novaConta);
 
+        // Atualiza senha com hash
         cliente.setSenha(passwordEncoder.encode(dto.senha()));
 
+        // Salva e retorna cliente atualizado
         return ClienteResponseDTO.fromEntity(repository.save(cliente));
     }
+
 
     public List<ClienteResponseDTO> listarClientesAtivos() {
         return repository.findAllByAtivoTrue().stream()
@@ -49,10 +53,12 @@ public class ClienteService {
                 .toList();
     }
 
+
     public ClienteResponseDTO buscarClienteAtivoPorCpf(String cpf) {
         var cliente = buscarPorCpfClienteAtivo(cpf);
         return ClienteResponseDTO.fromEntity(cliente);
     }
+
 
     public ClienteResponseDTO atualizarCliente(String cpf, ClienteRegistroDTO dto) {
         var cliente = buscarPorCpfClienteAtivo(cpf);
@@ -63,20 +69,18 @@ public class ClienteService {
         return ClienteResponseDTO.fromEntity(repository.save(cliente));
     }
 
+
     public void deletarCliente(String cpf) {
         var cliente = buscarPorCpfClienteAtivo(cpf);
 
         cliente.setAtivo(false);
-        cliente.getContas().forEach(
-                conta -> conta.setAtiva(false)
-        );
+        cliente.getContas().forEach(conta -> conta.setAtiva(false));
         repository.save(cliente);
     }
 
+
     private Cliente buscarPorCpfClienteAtivo(String cpf) {
-        var cliente = repository.findByCpfAndAtivoTrue(cpf).orElseThrow(
-                () -> new EntidadeNaoEncontradaException("Cliente")
-        );
-        return cliente;
+        return repository.findByCpfAndAtivoTrue(cpf)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente"));
     }
 }
