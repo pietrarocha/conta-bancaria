@@ -7,16 +7,9 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 public class ProblemDetailUtils {
-
-    public static ProblemDetail buildProblem(
-            HttpStatus status,
-            String title,
-            String detail,
-            String path
-    ) {
+    public static ProblemDetail buildProblem(HttpStatus status, String title, String details, String path){
         ProblemDetail problem = ProblemDetail.forStatus(status);
-        problem.setTitle(title);
-        problem.setDetail(detail);
+        problem.setDetail(details);
         problem.setInstance(URI.create(path));
         problem.setProperty("timestamp", LocalDateTime.now());
         problem.setProperty("application", "ContaBancariaAPI");

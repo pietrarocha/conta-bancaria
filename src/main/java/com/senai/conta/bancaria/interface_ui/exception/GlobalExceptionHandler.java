@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -17,28 +18,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ValoresNegativosException.class)
-    public ProblemDetail handleValoresNegativos (ValoresNegativosException ex,
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGeneralException (Exception ex,
                                                  HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
-                HttpStatus.BAD_REQUEST,
-                "Valores negativos não são permitidos.",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal server error",
                 ex.getMessage(),
                 request.getRequestURI()
         );
     }
-
-    @ExceptionHandler(ContaMesmoTipoException.class)
-    public ResponseEntity<String> handleContaMesmoTipo (ContaMesmoTipoException ex) {
-        return  new  ResponseEntity <>(ex.getMessage(), HttpStatus.CONFLICT);
-    }
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleException (Exception ex) {
-//        return  new  ResponseEntity <>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail badRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -60,6 +51,7 @@ public class GlobalExceptionHandler {
         problem.setProperty("errors", errors);
         return problem;
     }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
@@ -73,6 +65,7 @@ public class GlobalExceptionHandler {
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
     }
+
     @ExceptionHandler(ConversionFailedException.class)
     public ProblemDetail handleConversionFailed(ConversionFailedException ex, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
@@ -83,20 +76,80 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problem.setTitle("Erro de validação nos parâmetros");
-        problem.setDetail("Um ou mais parâmetros são inválidos");
-        problem.setInstance(URI.create(request.getRequestURI()));
+    @ExceptionHandler(ContaMesmoTipoException.class)
+    public ProblemDetail handleContaMesmoTipoException (ContaMesmoTipoException ex,
+                                                        HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.CONFLICT,
+                "Mesmo tipo de conta",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
 
-        Map<String, String> errors = new LinkedHashMap<>();
-        ex.getConstraintViolations().forEach(violation -> {
-            String campo = violation.getPropertyPath().toString();
-            String mensagem = violation.getMessage();
-            errors.put(campo, mensagem);
-        });
-        problem.setProperty("errors", errors);
-        return problem;
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ProblemDetail handleEntidadeNaoEncontradaException (EntidadeNaoEncontradaException ex,
+                                                               HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.NOT_FOUND,
+                "Entidade não encontrada",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(RendimentoInvalidoException.class)
+    public ProblemDetail handleRendimentoInvalidoException (RendimentoInvalidoException ex,
+                                                            HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Rendimento inválido",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(SaldoInsuficienteException.class)
+    public ProblemDetail handleSaldoInsuficienteException (SaldoInsuficienteException ex,
+                                                           HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Saldo insuficiente",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(TipoDeContaInvalidaException.class)
+    public ProblemDetail handleTipoDeContaInvalidaException (TipoDeContaInvalidaException ex,
+                                                             HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Tipo de conta inválida",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(TransferenciaParaMesmaContaException.class)
+    public ProblemDetail handleTransferenciaParaMesmaContaException (TransferenciaParaMesmaContaException ex,
+                                                                     HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.CONFLICT,
+                "Transferencia para a mesma conta não é permitido",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(ValoresNegativosException.class)
+    public ProblemDetail handleValoresNegativosException (ValoresNegativosException ex,
+                                                          HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Valores negativos não são permitidos",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
     }
 }

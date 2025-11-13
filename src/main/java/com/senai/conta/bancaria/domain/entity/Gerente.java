@@ -1,17 +1,21 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@SuperBuilder
 @Entity
-@Table(name = "gerentes")
-public class Gerente extends Usuario {
+@Data
+@NoArgsConstructor
+//@AllArgsConstructor
+@SuperBuilder
+@DiscriminatorValue("ADMIN")
+public class Gerente extends Usuario{
 
+    @Override
+    public TipoUsuario getTipo() {
+        return TipoUsuario.ADMIN;
+    }
 }

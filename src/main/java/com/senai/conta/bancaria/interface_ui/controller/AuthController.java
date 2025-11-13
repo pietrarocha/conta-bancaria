@@ -13,80 +13,55 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(
-        name = "Autenticação",
-        description = "Endpoints para login e geração de token JWT."
-)
+@Tag(name = "Auth", description = "Login do usuário")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService auth;
 
     @Operation(
-            summary = "Realizar login",
-            description = "Autentica um usuário com e-mail e senha válidos e retorna um token JWT para acesso às rotas protegidas.",
-            requestBody = @RequestBody(
+            summary = "Logar um novo serviço",
+            description = "Realiza o login do usuário e retorna um token de acesso",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
-                    description = "Credenciais de login do usuário",
                     content = @Content(
                             schema = @Schema(implementation = AuthDTO.LoginRequest.class),
-                            examples = @ExampleObject(
-                                    name = "Exemplo de Login",
-                                    value = """
-                                            {
-                                              "email": "admin@banco.com",
-                                              "senha": "admin123"
-                                            }
-                                            """
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                          "cpf": 12345678910,
+                                          "senha": "senha"
+                                        }
+                                    """
                             )
                     )
             ),
             responses = {
+                    @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
                     @ApiResponse(
-                            responseCode = "200",
-                            description = "Login realizado com sucesso — token JWT retornado",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(
-                                            name = "Resposta com Token",
-                                            value = """
-                                                    {
-                                                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                                    }
-                                                    """
-                                    )
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Requisição inválida (dados ausentes ou mal formatados)",
+                            responseCode = "404",
+                            description = "Usuário não encontrado",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "Campo ausente", value = "\"O campo 'email' é obrigatório.\""),
-                                            @ExampleObject(name = "Formato incorreto", value = "\"Formato de e-mail inválido.\"")
+                                            @ExampleObject(name = "Usuário não encontrado", value = "\"Usuário não encontrado(a) ou inativo(a)\""),
                                     }
                             )
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Credenciais incorretas",
+                            description = "Credenciais inválidas",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "Senha incorreta", value = "\"Senha incorreta.\""),
-                                            @ExampleObject(name = "Usuário não encontrado", value = "\"Usuário não encontrado.\"")
+                                            @ExampleObject(name = "Credenciais inválidas", value = "\"Credenciais inválidas\""),
                                     }
                             )
                     )
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<AuthDTO.TokenResponse> login(
-            @org.springframework.web.bind.annotation.RequestBody AuthDTO.LoginRequest req
-    ) {
+    public ResponseEntity<AuthDTO.TokenResponse> login(@org.springframework.web.bind.annotation.RequestBody AuthDTO.LoginRequest req) {
         String token = auth.login(req);
         return ResponseEntity.ok(new AuthDTO.TokenResponse(token));
     }

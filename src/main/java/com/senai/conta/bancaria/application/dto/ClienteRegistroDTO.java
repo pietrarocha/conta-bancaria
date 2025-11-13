@@ -1,66 +1,41 @@
 package com.senai.conta.bancaria.application.dto;
 
 import com.senai.conta.bancaria.domain.entity.Cliente;
-import com.senai.conta.bancaria.domain.enums.Role;
+import com.senai.conta.bancaria.domain.entity.Conta;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 
-@Schema(
-        name = "ClienteRegistroDTO",
-        description = "Objeto utilizado para registrar ou atualizar informações de um cliente, incluindo seus dados pessoais e conta vinculada."
-)
 public record ClienteRegistroDTO(
-
-        @Schema(
-                description = "Nome completo do cliente.",
-                example = "Maria Oliveira"
-        )
-        @NotBlank(message = "Nome é obrigatório.")
+        @NotNull
+        @NotBlank
+        @Size(max = 120)
+        @Schema(description = "Nome do cliente", example = "Nome")
         String nome,
-
-        @Schema(
-                description = "CPF do cliente (somente números). Deve ser único no sistema.",
-                example = "12345678900"
-        )
-        @NotBlank(message = "CPF é obrigatório.")
+        @NotNull
+        @NotBlank
+        @Size(min = 11, max = 11)
+        @Schema(description = "Cpf do cliente", example = "12345678910")
         String cpf,
-
-        @Schema(
-                description = "E-mail do cliente utilizado para login e contato.",
-                example = "maria.oliveira@gmail.com"
-        )
-        @NotBlank(message = "E-mail é obrigatório.")
-        String email,
-
-        @Schema(
-                description = "Senha do cliente. Deve conter no mínimo 6 caracteres.",
-                example = "senhaSegura123"
-        )
-        @NotBlank(message = "Senha é obrigatória.")
+        @NotNull
+        @NotBlank
+        @Schema(description = "Senha do cliente", example = "senha")
         String senha,
-
-        @Schema(
-                description = "Objeto contendo informações resumidas da conta associada ao cliente.",
-                implementation = ContaResumoDTO.class
-        )
-        @Valid
+        @NotNull
+        @Schema(description = "Conta do cliente")
         ContaResumoDTO contaDTO
 ) {
-    /**
-     * Converte o DTO em uma entidade Cliente pronta para persistência no banco de dados.
-     */
     public Cliente toEntity() {
         return Cliente.builder()
-                .ativo(true)
                 .nome(this.nome)
                 .cpf(this.cpf)
-                .email(this.email)
                 .senha(this.senha)
-                .role(Role.CLIENTE)
-                .contas(new ArrayList<>())
+                .contas(new ArrayList<Conta>())
+                .ativo(true)
                 .build();
     }
 }

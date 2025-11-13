@@ -2,7 +2,7 @@ package com.senai.conta.bancaria.application.service;
 
 import com.senai.conta.bancaria.application.dto.AuthDTO;
 import com.senai.conta.bancaria.domain.entity.Usuario;
-import com.senai.conta.bancaria.domain.exceptions.UsuarioNaoEncontradoException;
+import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.repository.UsuarioRepository;
 import com.senai.conta.bancaria.infrastructure.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -14,23 +14,18 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
     private final UsuarioRepository usuarios;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
-
     public String login(AuthDTO.LoginRequest req) {
-        // Busca o usuário pelo e-mail no repositório
-        Usuario usuario = usuarios.findByEmail(req.email())
-                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+        Usuario usuario = usuarios.findByCpfAndAtivoTrue(req.cpf())
+                .orElseThrow(() ->  new EntidadeNaoEncontradaException("Usuário"));
 
-        // Valida a senha usando o PasswordEncoder
         if (!encoder.matches(req.senha(), usuario.getSenha())) {
             throw new BadCredentialsException("Credenciais inválidas");
         }
 
-        // Gera e retorna o token JWT contendo e-mail e role do usuário
-        return jwt.generateToken(usuario.getEmail(), usuario.getRole().name());
+        return jwt.generateToken(usuario.getCpf(), usuario.getTipo().name());
     }
 }

@@ -1,48 +1,35 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import com.senai.conta.bancaria.domain.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+
 @Entity
 @SuperBuilder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED) // estratégia JOINED
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING, length = 20)
 public abstract class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     protected String id;
 
-    @NotBlank
     @Column(nullable = false)
     protected String nome;
 
-    @Column(nullable = false, unique = true, length = 14)
-    protected String cpf; // formato "000.000.000-00" (validação pode ser ampliada)
+    @Column(nullable = false, unique = true, length = 11)
+    protected String cpf;
 
-    @Email
-    @NotBlank
-    @Column(nullable = false, unique = true)
-    protected String email;
-
-    @Column(nullable = false)
-    protected boolean ativo = true;
-
-    @NotBlank
     @Column(nullable = false)
     protected String senha;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    protected Role role;
+    private boolean ativo;
+
+    public abstract TipoUsuario getTipo();
 }

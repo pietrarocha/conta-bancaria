@@ -13,7 +13,6 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-
     private final Key key;
     private final long expirationSeconds;
 
@@ -24,10 +23,10 @@ public class JwtService {
         this.expirationSeconds = expirationSeconds;
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String cpf, String role) {
         Instant now = Instant.now();
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(cpf)
                 .claim("role", role)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusSeconds(expirationSeconds)))
@@ -35,7 +34,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractEmail(String token) {
+    public String extractCpf(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -44,7 +43,7 @@ public class JwtService {
                 .getSubject();
     }
 
-    public String extractRole(String token) {
+    public String extractTipo(String token) {
         return (String) Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -53,8 +52,8 @@ public class JwtService {
                 .get("role");
     }
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String cpf = extractCpf(token);
+        return (cpf.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
@@ -66,5 +65,4 @@ public class JwtService {
                 .getExpiration();
         return expiration.before(new Date());
     }
-
 }

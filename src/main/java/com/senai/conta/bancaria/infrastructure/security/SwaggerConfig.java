@@ -1,4 +1,4 @@
-package com.senai.conta.bancaria.infrastructure.config;
+package com.senai.conta.bancaria.infrastructure.security;
 
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.*;

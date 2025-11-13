@@ -1,10 +1,7 @@
 package com.senai.conta.bancaria.interface_ui.controller;
 
 
-import com.senai.conta.bancaria.application.dto.ContaAtualizacaoDTO;
-import com.senai.conta.bancaria.application.dto.ContaResumoDTO;
-import com.senai.conta.bancaria.application.dto.TransferenciaDTO;
-import com.senai.conta.bancaria.application.dto.ValorSaqueDepositoDTO;
+import com.senai.conta.bancaria.application.dto.*;
 import com.senai.conta.bancaria.application.service.ContaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,257 +18,267 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Contas Bancárias", description = "Gerenciamento completo de contas bancárias e operações financeiras")
+@Tag(name = "Conta", description = "Gerenciamento de contas dos clientes do banco")
 @RestController
-@RequestMapping("/api/conta")
+@RequestMapping("/conta")
 @RequiredArgsConstructor
 public class ContaController {
-
-    private final ContaService service;
-
+    private final ContaService contaService;
 
     @Operation(
-            summary = "Listar todas as contas",
-            description = "Retorna todas as contas cadastradas no sistema com seus dados resumidos",
+            summary = "Listar todas as contas ativas",
+            description = "Retorna todos as contas cadastradas",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
             }
     )
     @GetMapping
-    public ResponseEntity<List<ContaResumoDTO>> listarTodasContas() {
-        return ResponseEntity.ok(service.listarTodasContas());
+    public ResponseEntity<List<ContaResumoDTO>> listarConta() {
+        return ResponseEntity.ok(contaService.listarConta());
     }
 
     @Operation(
-            summary = "Buscar conta por número",
-            description = "Retorna os dados de uma conta específica a partir do seu número",
+            summary = "Buscar uma conta ativa pelo numero",
+            description = "Retorna uma conta cadastrada",
             parameters = {
-                    @Parameter(name = "numeroDaConta", description = "Número da conta bancária", example = "12345-6")
+                    @Parameter(name = "numero", description = "numero da conta a ser buscada", example = "1234-5")
             },
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Conta encontrada com sucesso"),
+                    @ApiResponse(responseCode = "200", description = "Conta retornada com sucesso"),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Conta não encontrada",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
+                                    examples = @ExampleObject(name = "Conta não encontrada", value = "\"Conta com numero 1234-5 não encontrada.\"")
                             )
                     )
             }
     )
-    @GetMapping("/{numeroDaConta}")
-    public ResponseEntity<ContaResumoDTO> buscarContaPorNumero(@PathVariable String numeroDaConta) {
-        return ResponseEntity.ok(service.buscarContaPorNumero(numeroDaConta));
+    @GetMapping("/numero/{numero}")
+    public ResponseEntity<ContaResumoDTO> buscarConta(@PathVariable String numero) {
+        return ResponseEntity.ok(contaService.buscarContaPorNumero(numero));
     }
 
-
     @Operation(
-            summary = "Atualizar conta bancária",
-            description = "Atualiza os dados de uma conta existente (ex: nome do titular, tipo de conta)",
+            summary = "Atualizar uma conta ativa pelo numero",
+            description = "Realiza a atualização da conta",
             parameters = {
-                    @Parameter(name = "numeroConta", description = "Número da conta a ser atualizada", example = "12345-6")
+                    @Parameter(name = "numero", description = "numero da conta a ser atualizada", example = "1234-5")
             },
-            requestBody = @RequestBody(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
-                            schema = @Schema(implementation = ContaAtualizacaoDTO.class),
-                            examples = @ExampleObject(name = "Exemplo de atualização", value = """
-                                    {
-                                      "nomeTitular": "Maria Oliveira",
-                                      "tipoConta": "POUPANCA"
-                                    }
-                            """)
+                            schema = @Schema(implementation = ClienteRegistroDTO.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "tipoConta": "CONTA_CORRENTE",
+                                             "numero": "1234-5",
+                                             "saldo": 123,
+                                             "limite": 123,
+                                             "taxa": 123,
+                                             "rendimento": 123
+                                         }
+                                    """
+                            )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Conta atualizada com sucesso"),
+                    @ApiResponse(responseCode = "200", description = "Atualização realizada com sucesso"),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Conta não encontrada",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
-                            )
-                    )
-            }
-    )
-    @PutMapping("/{numeroConta}")
-    public ResponseEntity<ContaResumoDTO> atualizarConta(@PathVariable String numeroConta,
-                                                         @Valid @org.springframework.web.bind.annotation.RequestBody ContaAtualizacaoDTO dto) {
-        return ResponseEntity.ok(service.atualizarConta(numeroConta, dto));
-    }
-
-
-    @Operation(
-            summary = "Deletar conta bancária",
-            description = "Remove uma conta bancária existente do sistema pelo número da conta",
-            parameters = {
-                    @Parameter(name = "numeroDaConta", description = "Número da conta bancária", example = "12345-6")
-            },
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Conta removida com sucesso"),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Conta não encontrada",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
-                            )
-                    )
-            }
-    )
-    @DeleteMapping("/{numeroDaConta}")
-    public ResponseEntity<Void> deletarConta(@PathVariable String numeroDaConta) {
-        service.deletarConta(numeroDaConta);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @Operation(
-            summary = "Realizar saque",
-            description = "Efetua o saque de um valor específico de uma conta bancária, validando saldo disponível",
-            parameters = {
-                    @Parameter(name = "numeroConta", description = "Número da conta", example = "12345-6")
-            },
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(
-                            schema = @Schema(implementation = ValorSaqueDepositoDTO.class),
-                            examples = @ExampleObject(name = "Exemplo de saque", value = """
-                                    {
-                                      "valor": 200.00
-                                    }
-                            """)
-                    )
-            ),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso"),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Saldo insuficiente ou valor inválido",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "Saldo insuficiente", value = "\"Saldo insuficiente para saque.\""),
-                                            @ExampleObject(name = "Valor inválido", value = "\"Valor de saque deve ser maior que zero.\"")
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
                                     }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Conta não encontrada",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
                             )
                     )
             }
     )
-    @PostMapping("/{numeroConta}/sacar")
-    public ResponseEntity<ContaResumoDTO> sacar(@PathVariable String numeroConta,
-                                                @Valid @org.springframework.web.bind.annotation.RequestBody ValorSaqueDepositoDTO dto) {
-        return ResponseEntity.ok(service.sacar(numeroConta, dto));
+    @PutMapping("/numero/{numero}")
+    public ResponseEntity<ContaResumoDTO> atualizarConta(@PathVariable String numero, @Valid @org.springframework.web.bind.annotation.RequestBody ContaAtualizacaoDTO dto) {
+        return ResponseEntity.ok(contaService.atualizarConta(numero, dto));
     }
 
-
     @Operation(
-            summary = "Realizar depósito",
-            description = "Adiciona um valor à conta bancária especificada",
+            summary = "Sacar valor de uma conta ativa pelo numero",
+            description = "Realiza o saque da conta",
             parameters = {
-                    @Parameter(name = "numeroConta", description = "Número da conta", example = "12345-6")
+                    @Parameter(name = "numero", description = "numero da conta para sacar", example = "1234-5")
             },
-            requestBody = @RequestBody(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
-                            schema = @Schema(implementation = ValorSaqueDepositoDTO.class),
-                            examples = @ExampleObject(name = "Exemplo de depósito", value = """
-                                    {
-                                      "valor": 500.00
-                                    }
-                            """)
+                            schema = @Schema(implementation = ClienteRegistroDTO.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "valor": 123
+                                         }
+                                    """
+                            )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso"),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Valor inválido",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Valor de depósito deve ser maior que zero.\"")
-                            )
-                    ),
+                    @ApiResponse(responseCode = "200", description = "Saque realizada com sucesso"),
                     @ApiResponse(
                             responseCode = "404",
                             description = "Conta não encontrada",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
-                            )
-                    )
-            }
-    )
-    @PostMapping("/{numeroConta}/depositar")
-    public ResponseEntity<ContaResumoDTO> depositar(@PathVariable String numeroConta,
-                                                    @Valid @org.springframework.web.bind.annotation.RequestBody ValorSaqueDepositoDTO dto) {
-        return ResponseEntity.ok(service.depositar(numeroConta, dto));
-    }
-
-
-    @Operation(
-            summary = "Realizar transferência",
-            description = "Transfere um valor de uma conta de origem para uma conta de destino",
-            parameters = {
-                    @Parameter(name = "numeroConta", description = "Número da conta de origem", example = "12345-6")
-            },
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(
-                            schema = @Schema(implementation = TransferenciaDTO.class),
-                            examples = @ExampleObject(name = "Exemplo de transferência", value = """
-                                    {
-                                      "numeroContaDestino": "98765-4",
-                                      "valor": 300.00
-                                    }
-                            """)
-                    )
-            ),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso"),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Saldo insuficiente ou valor inválido",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "Saldo insuficiente", value = "\"Saldo insuficiente para transferência.\""),
-                                            @ExampleObject(name = "Valor inválido", value = "\"Valor da transferência deve ser maior que zero.\"")
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
                                     }
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Conta de origem ou destino não encontrada",
+                            responseCode = "400",
+                            description = "Valores negativos não são permitidos",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta destino 98765-4 não encontrada.\"")
+                                    examples = {
+                                            @ExampleObject(name = "Valores negativos não são permitidos", value = "\"Não é possível realizar a operação com valores negativos\""),
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Saldo insuficiente para a operação",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Saldo insuficiente para a operação", value = "\"Saldo insuficiente para a operação\""),
+                                    }
                             )
                     )
             }
     )
-    @PostMapping("/{numeroConta}/transferir")
-    public ResponseEntity<ContaResumoDTO> transferir(@PathVariable String numeroConta,
-                                                     @Valid @org.springframework.web.bind.annotation.RequestBody TransferenciaDTO dto) {
-        return ResponseEntity.ok(service.transferir(numeroConta, dto));
+    @PostMapping("/numero/{numero}/sacar")
+    public ResponseEntity<ContaResumoDTO> sacar(@PathVariable String numero, @Valid @org.springframework.web.bind.annotation.RequestBody ValorSaqueDepositoDTO valor) {
+        return ResponseEntity.ok(contaService.sacar(numero, valor));
     }
 
+    @Operation(
+            summary = "Depositar valor para uma conta ativa pelo numero",
+            description = "Realiza o deposito da conta",
+            parameters = {
+                    @Parameter(name = "numero", description = "numero da conta a ser para depositar", example = "1234-5")
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ClienteRegistroDTO.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "valor": 123
+                                         }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Deposito realizado com sucesso"),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Conta não encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Valores negativos não são permitidos",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Valores negativos não são permitidos", value = "\"Não é possível realizar a operação com valores negativos\""),
+                                    }
+                            )
+                    )
+            }
+    )
+    @PostMapping("/numero/{numero}/depositar")
+    public ResponseEntity<ContaResumoDTO> depositar(@PathVariable String numero, @Valid @org.springframework.web.bind.annotation.RequestBody ValorSaqueDepositoDTO dto) {
+        return ResponseEntity.ok(contaService.depositar(numero, dto));
+    }
 
     @Operation(
-            summary = "Aplicar rendimento",
-            description = "Aplica rendimento mensal (juros) sobre o saldo da conta poupança",
+            summary = "Transferir valor de uma conta ativa pelo numero para outra",
+            description = "Realiza a transferencia da uma conta para outra",
             parameters = {
-                    @Parameter(name = "numeroDaConta", description = "Número da conta", example = "12345-6")
+                    @Parameter(name = "numero", description = "numero da conta para sacar", example = "1234-5")
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ClienteRegistroDTO.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "numeroContaDestino": "1234-6",
+                                             "valor": 123
+                                         }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Transferencia realizada com sucesso"),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Conta não encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Não é possível transferir para a mesma conta",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Não é possível transferir para a mesma conta", value = "\"Não é possível transferir para a mesma conta\""),
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Valores negativos não são permitidos",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Valores negativos não são permitidos", value = "\"Não é possível realizar a operação com valores negativos\""),
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Saldo insuficiente para a operação",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Saldo insuficiente para a operação", value = "\"Saldo insuficiente para a operação\""),
+                                    }
+                            )
+                    )
+            }
+    )
+    @PostMapping("/numero/{numero}/transferir")
+    public ResponseEntity<ContaResumoDTO> transferir(@PathVariable String numero, @Valid @org.springframework.web.bind.annotation.RequestBody TransferenciaDTO dto) {
+        return ResponseEntity.ok(contaService.transferir(numero, dto));
+    }
+
+    @Operation(
+            summary = "Aplicar rendimento em uma conta poupanca ativa pelo numero",
+            description = "Aplica o rendimento da uma conta poupanca",
+            parameters = {
+                    @Parameter(name = "numero", description = "numero da conta para aplicar rendimento", example = "1234-5")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Rendimento aplicado com sucesso"),
@@ -280,13 +287,41 @@ public class ContaController {
                             description = "Conta não encontrada",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Conta com número 99999-9 não encontrada.\"")
+                                    examples = {
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
+                                    }
                             )
                     )
             }
     )
-    @PostMapping("/{numeroDaConta}/rendimento")
-    public ResponseEntity<ContaResumoDTO> aplicarRendimento(@PathVariable String numeroDaConta) {
-        return ResponseEntity.ok(service.aplicarRendimento(numeroDaConta));
+    @PostMapping("/numero/{numero}/rendimento")
+    public ResponseEntity<ContaResumoDTO> aplicarRendimento(@PathVariable String numero) {
+        return ResponseEntity.ok(contaService.aplicarRendimento(numero));
+    }
+
+    @Operation(
+            summary = "Desativar uma conta",
+            description = "Desativa uma conta da base de dados a partir do seu numero",
+            parameters = {
+                    @Parameter(name = "numero", description = "numero da conta a ser deletada", example = "1234-5")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Conta removida com sucesso"),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Conta não encontrada",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(name = "Conta não encontrada", value = "\"Conta não encontrado(a) ou inativo(a)\""),
+                                    }
+                            )
+                    )
+            }
+    )
+    @DeleteMapping("/numero/{numero}")
+    public ResponseEntity<Void> desativarConta(@PathVariable String numero) {
+        contaService.desativarConta(numero);
+        return ResponseEntity.noContent().build();
     }
 }

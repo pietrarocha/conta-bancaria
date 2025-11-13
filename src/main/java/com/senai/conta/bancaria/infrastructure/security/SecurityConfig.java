@@ -16,27 +16,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final UsuarioDetailsService usuarioDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(
+                        AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**","/api-docs/**").permitAll()
+                        .requestMatchers("/auth/**","/swagger-ui/**","/v3/api-docs/**", "/h2-console/**").permitAll()
 
-                        // Cliente endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/cliente/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/cliente/**").hasAnyRole("ADMIN","CLIENTE")
+                        .requestMatchers(HttpMethod.POST, "/cliente", "/taxa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/cliente", "/conta/**", "/taxa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/cliente/**", "/conta/**", "/taxa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/conta/**", "/taxa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/conta/**", "/pagamento/**").hasAnyRole("ADMIN", "CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/conta/numero/**", "/pagamento/**").hasAnyRole("ADMIN", "CLIENTE")
 
-                        // Conta endpoints
-                        .requestMatchers(HttpMethod.PUT, "/api/conta/**").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.GET, "/api/conta/**").hasAnyRole("CLIENTE")
-                        .requestMatchers(HttpMethod.DELETE, "/api/conta/**").hasAnyRole("CLIENTE")
-
-                        // Demais endpoints precisam autenticação
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -44,6 +40,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

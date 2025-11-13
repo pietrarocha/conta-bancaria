@@ -1,48 +1,50 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import com.senai.conta.bancaria.domain.enums.StatusPagamento;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Data
-@SuperBuilder
-@Table(name="pagamento")
-@DiscriminatorValue("PAGAMENTO")
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "pagamento", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_pagamento_boleto", columnNames = "boleto")}
+)
 public class Pagamento {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conta_id", foreignKey = @ForeignKey(name = "fk_pagamento_conta"))
+    private Conta conta;
+
+    @Column(nullable = false)
     private String boleto;
 
+    @Column(precision = 19, scale = 2)
+    private BigDecimal valorPago;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private LocalDateTime dataPagamento;
 
     @Column(nullable = false)
-    private Double valorPago;
-
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusPagamento status;
 
-
-
-    // Associação com a Conta
-    @ManyToOne
-    @JoinColumn(name = "conta_id", nullable = false)
-    private Conta conta;
-
-    // Associação ManyToOne com Taxa
-    @ManyToOne
-    @JoinColumn(name = "taxa_id", nullable = true)
-    private Taxas taxa;
-
-
-    // Métodos de lógica de pagamento podem ser adicionados aqui
+    @ManyToMany
+    @JoinTable(name = "pagamento_taxa",
+            joinColumns = @JoinColumn(name = "pagamento_id"),
+            inverseJoinColumns = @JoinColumn(name = "taxa_id")
+    )
+    private Set<Taxa> taxas;
 }

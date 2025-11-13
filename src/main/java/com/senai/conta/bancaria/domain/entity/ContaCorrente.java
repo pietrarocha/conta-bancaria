@@ -1,42 +1,39 @@
 package com.senai.conta.bancaria.domain.entity;
 
 import com.senai.conta.bancaria.domain.exceptions.SaldoInsuficienteException;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
 @Entity
-@DiscriminatorValue("CORRENTE")
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class ContaCorrente extends Conta {
+@DiscriminatorValue("CORRENTE")
+public class ContaCorrente extends Conta{
     @Column(precision = 19, scale = 2)
     private BigDecimal limite;
 
-    @Column(precision = 19, scale = 4)
+    @Column(precision = 10, scale = 4)
     private BigDecimal taxa;
 
     @Override
-    public String getTipo() {
-        return "CORRENTE";
+    public TipoConta getTipo() {
+        return TipoConta.CONTA_CORRENTE;
     }
 
     @Override
-    public void sacar(BigDecimal valor) {
-        validarValorMaiorQueZero(valor, "saque");
-
+    public void sacar(BigDecimal valor){
+        validarValorMaiorQueZero(valor, "sacar");
         BigDecimal custoSaque = valor.multiply(taxa);
         BigDecimal totalSaque = valor.add(custoSaque);
 
-        if (this.getSaldo().add(this.limite).compareTo(totalSaque) < 0) {
+        if (this.getSaldo().add(this.limite).compareTo(totalSaque) < 0){
             throw new SaldoInsuficienteException();
         }
 

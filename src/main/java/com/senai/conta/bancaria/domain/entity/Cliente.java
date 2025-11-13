@@ -14,16 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Table(
-        name = "cliente",
-        uniqueConstraints = @UniqueConstraint(name = "uk_cliente_cpf", columnNames = "cpf")
-)
-public class Cliente extends Usuario {
-
+@DiscriminatorValue("CLIENTE")
+public class Cliente extends Usuario{
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Conta> contas;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gerente_id")
-    private Gerente gerente;
+    @Override
+    public TipoUsuario getTipo() {
+        return TipoUsuario.CLIENTE;
+    }
 }

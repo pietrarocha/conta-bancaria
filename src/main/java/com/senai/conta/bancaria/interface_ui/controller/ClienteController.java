@@ -21,183 +21,169 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "Clientes", description = "Gerenciamento de clientes bancários: cadastro, consulta, atualização e exclusão.")
+@Tag(name = "Cliente", description = "Gerenciamento de clientes do banco")
 @RestController
-@RequestMapping("/api/cliente")
+@RequestMapping("/cliente")
 @RequiredArgsConstructor
-@Transactional
 public class ClienteController {
-
-    private final ClienteService service;
-
+    private final ClienteService clienteService;
 
     @Operation(
-            summary = "Cadastrar um novo cliente",
-            description = "Registra um novo cliente no sistema ou anexa uma conta existente a ele, após validações de CPF e e-mail.",
-            requestBody = @RequestBody(
+            summary = "Cadastrar um novo usuário e sua conta poupança/corrente",
+            description = "Realiza o cadastro do cliente e sua conta",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ClienteRegistroDTO.class),
-                            examples = @ExampleObject(
-                                    name = "Exemplo de cadastro de cliente",
-                                    value = """
-                                            {
-                                              "nome": "Ana Souza",
-                                              "cpf": "987.654.321-00",
-                                              "email": "ana.souza@email.com",
-                                              "telefone": "(11) 99999-8888",
-                                              "numeroConta": "12345-6"
-                                            }
-                                            """
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "nome": "Nome",
+                                             "cpf": 12345678910,
+                                             "senha": "senha",
+                                             "contaDTO": {
+                                                 "tipoConta": "CONTA_POUPANCA",
+                                                 "numero": 1234,
+                                                 "saldo": 1000
+                                             }
+                                         }
+                                    """
                             )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso"),
+                    @ApiResponse(responseCode = "200", description = "Cadastro realizado com sucesso"),
                     @ApiResponse(
-                            responseCode = "400",
-                            description = "Erro de validação dos dados de entrada",
+                            responseCode = "404",
+                            description = "Usuário não encontrado",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "CPF inválido", value = "\"CPF informado é inválido.\""),
-                                            @ExampleObject(name = "Campo obrigatório", value = "\"O campo 'nome' é obrigatório.\""),
-                                            @ExampleObject(name = "Email inválido", value = "\"Formato de e-mail incorreto.\"")
+                                            @ExampleObject(name = "Cliente não encontrado", value = "\"Cliente não encontrado(a) ou inativo(a)\""),
                                     }
                             )
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflito de dados",
+                            description = "Mesmo tipo de conta",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Já existe um cliente cadastrado com este CPF.\"")
+                                    examples = {
+                                            @ExampleObject(name = "Mesmo tipo de conta", value = "\"Cliente já possui uma conta ativa deste tipo\""),
+                                    }
                             )
                     )
             }
     )
     @PostMapping
-    public ResponseEntity<ClienteResponseDTO> registrarCliente(
-            @Valid @org.springframework.web.bind.annotation.RequestBody ClienteRegistroDTO dto
-    ) {
-        ClienteResponseDTO novoCliente = service.registarClienteOuAnexarConta(dto);
+    public ResponseEntity<ClienteResponseDTO> registrarCliente(@Valid  @org.springframework.web.bind.annotation.RequestBody ClienteRegistroDTO dto) {
+        ClienteResponseDTO novoCliente = clienteService.registrarClienteOuAnexarConta(dto);
         return ResponseEntity.created(
                 URI.create("/api/cliente/cpf/" + novoCliente.cpf())
         ).body(novoCliente);
     }
 
-
     @Operation(
             summary = "Listar todos os clientes ativos",
-            description = "Retorna uma lista de todos os clientes ativos cadastrados no sistema.",
+            description = "Retorna todos os clientes cadastrados",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso")
+                    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
             }
     )
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos() {
-        return ResponseEntity.ok(service.listarClientesAtivos());
+        return ResponseEntity.ok(clienteService.listarClientesAtivos());
     }
 
-
     @Operation(
-            summary = "Buscar cliente ativo por CPF",
-            description = "Retorna os dados de um cliente ativo com base em seu CPF.",
+            summary = "Buscar um cliente ativo pelo cpf",
+            description = "Retorna um cliente cadastrado",
             parameters = {
-                    @Parameter(name = "cpf", description = "CPF do cliente", example = "987.654.321-00")
+                    @Parameter(name = "cpf", description = "cpf do cliente a ser buscado", example = "12345678910")
             },
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso"),
+                    @ApiResponse(responseCode = "200", description = "Cliente retornado com sucesso"),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Cliente não encontrado ou inativo",
+                            description = "Cliente não encontrado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Cliente com CPF 987.654.321-00 não encontrado.\"")
+                                    examples = @ExampleObject(name = "Cliente não encontrado", value = "\"Cliente com id 111111111 não encontrado.\"")
                             )
                     )
             }
     )
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<ClienteResponseDTO> buscarClienteAtivoPorCpf(@PathVariable String cpf) {
-        return ResponseEntity.ok(service.buscarClienteAtivoPorCpf(cpf));
+        return ResponseEntity.ok(clienteService.buscarClienteAtivoPorCpf(cpf));
     }
 
-
     @Operation(
-            summary = "Atualizar dados de um cliente",
-            description = "Atualiza informações de um cliente existente (como nome, telefone, e-mail ou conta vinculada).",
+            summary = "Atualizar um usuário ativo pelo cpf",
+            description = "Realiza a atualização do cliente",
             parameters = {
-                    @Parameter(name = "cpf", description = "CPF do cliente a ser atualizado", example = "987.654.321-00")
+                    @Parameter(name = "cpf", description = "cpf do cliente a ser atualizado", example = "12345678910")
             },
-            requestBody = @RequestBody(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ClienteRegistroDTO.class),
-                            examples = @ExampleObject(name = "Exemplo de atualização de cliente", value = """
-                                    {
-                                      "nome": "Ana Lúcia Souza",
-                                      "cpf": "987.654.321-00",
-                                      "email": "ana.lucia@email.com",
-                                      "telefone": "(11) 98888-7777",
-                                      "numeroConta": "54321-0"
-                                    }
-                            """)
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                             "nome": "Nome",
+                                             "cpf": 12345678910,
+                                             "senha": "senha",
+                                             "contaDTO": {
+                                                 "tipoConta": "CONTA_POUPANCA",
+                                                 "numero": 1234,
+                                                 "saldo": 1000
+                                             }
+                                         }
+                                    """
+                            )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
+                    @ApiResponse(responseCode = "200", description = "Atualização realizada com sucesso"),
                     @ApiResponse(
-                            responseCode = "400",
-                            description = "Erro de validação nos dados atualizados",
+                            responseCode = "404",
+                            description = "Usuário não encontrado",
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject(name = "CPF inválido", value = "\"CPF informado é inválido.\""),
-                                            @ExampleObject(name = "Email inválido", value = "\"Formato de e-mail incorreto.\"")
+                                            @ExampleObject(name = "Cliente não encontrado", value = "\"Cliente não encontrado(a) ou inativo(a)\""),
                                     }
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Cliente não encontrado",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Cliente com CPF 987.654.321-00 não encontrado.\"")
                             )
                     )
             }
     )
     @PutMapping("/cpf/{cpf}")
-    public ResponseEntity<ClienteResponseDTO> atualizarCliente(
-            @PathVariable String cpf,
-            @Valid @org.springframework.web.bind.annotation.RequestBody ClienteRegistroDTO dto
-    ) {
-        return ResponseEntity.ok(service.atualizarCliente(cpf, dto));
+    public ResponseEntity<ClienteResponseDTO> atualizarClientePorCpf(@PathVariable String cpf, @Valid @org.springframework.web.bind.annotation.RequestBody ClienteRegistroDTO dto) {
+        return ResponseEntity.ok(clienteService.atualizarCliente(cpf, dto));
     }
 
-
     @Operation(
-            summary = "Deletar cliente",
-            description = "Remove permanentemente um cliente do sistema a partir do seu CPF.",
+            summary = "Desativar um cliente",
+            description = "Desativa um cliente da base de dados a partir do seu cpf",
             parameters = {
-                    @Parameter(name = "cpf", description = "CPF do cliente a ser deletado", example = "987.654.321-00")
+                    @Parameter(name = "cpf", description = "cpf do cliente a ser deletado", example = "12345678910")
             },
             responses = {
                     @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso"),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Cliente não encontrado",
+                            description = "Usuário não encontrado",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "\"Cliente com CPF 987.654.321-00 não encontrado.\"")
+                                    examples = {
+                                            @ExampleObject(name = "Cliente não encontrado", value = "\"Cliente não encontrado(a) ou inativo(a)\""),
+                                    }
                             )
                     )
             }
     )
     @DeleteMapping("/cpf/{cpf}")
-    public ResponseEntity<Void> deletarCliente(@PathVariable String cpf) {
-        service.deletarCliente(cpf);
+    public ResponseEntity<Void> desativarCliente(@PathVariable String cpf) {
+        clienteService.desativarCliente(cpf);
         return ResponseEntity.noContent().build();
     }
 }
