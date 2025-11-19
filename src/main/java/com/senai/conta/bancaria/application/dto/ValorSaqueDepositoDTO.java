@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-
 public record ValorSaqueDepositoDTO (
         @NotNull
         @Schema(description = "Valor a ser depositado/sacado", example = "123")

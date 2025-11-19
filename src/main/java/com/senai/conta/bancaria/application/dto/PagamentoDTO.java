@@ -14,44 +14,32 @@ import java.util.HashSet;
 import java.util.List;
 
 public record PagamentoDTO(
-        @Schema(description = "Conta para pagamento", example = "Nome")
-        ContaResumoDTO contaDTO,
+        @Schema(description = "Conta para pagamento", example = "123")
+        String numeroConta,
         @NotNull
         @NotBlank
-        @Size(min = 11, max = 11)
-        @Schema(description = "Boleto a ser pago", example = "12345678910")
+        @Schema(description = "Boleto a ser pago", example = "123")
         String boleto,
         @Schema(description = "Valor pago", example = "123")
         BigDecimal valorPago,
-//        @Schema(description = "Data do pagamento")
-//        LocalDateTime dataPagamento,
-//        @NotNull
-//        @NotBlank
-//        @Schema(description = "Status do pagamento", example = "SUCESSO")
-//        StatusPagamento status,
         @NotNull
         @Schema(description = "Taxas do pagamento")
         List<TaxaDTO> taxas
 ) {
-    public Pagamento toEntity() {
-        List<Taxa> listTaxas = this.taxas.stream().map(TaxaDTO::toEntity).toList();
-        Conta conta = this.toEntity().getConta();
+    public Pagamento toEntity(Conta conta, HashSet<Taxa> listTaxas) {
         return Pagamento.builder()
                 .conta(conta)
                 .boleto(this.boleto)
                 .valorPago(this.valorPago)
-                .dataPagamento(LocalDateTime.now())
-                .taxas(new HashSet<>(listTaxas))
+                .taxas(listTaxas)
                 .build();
     }
 
     public static PagamentoDTO fromEntity(Pagamento pagamento) {
         return new PagamentoDTO(
-                ContaResumoDTO.fromEntity(pagamento.getConta()),
+                pagamento.getConta().getNumero(),
                 pagamento.getBoleto(),
                 pagamento.getValorPago(),
-//                    pagamento.getDataPagamento(),
-//                    pagamento.getStatus(),
                 pagamento.getTaxas().stream().map(TaxaDTO::fromEntity).toList()
         );
     }

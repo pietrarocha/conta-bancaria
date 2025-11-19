@@ -8,7 +8,6 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public record ContaAtualizacaoDTO(
-
         @NotNull
         @NotBlank
         @Schema(description = "Tipo de conta", example = "CONTA_CORRENTE")

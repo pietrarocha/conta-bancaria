@@ -10,15 +10,11 @@ import java.math.BigDecimal;
 
 public record TaxaDTO(
         @NotNull
-        @NotBlank
         @Schema(description = "Descricao da taxa", example = "IOF")
         DescricaoTaxa descricao,
         @NotNull
-        @NotBlank
         @Schema(description = "Percentual da taxa", example = "0.1")
         BigDecimal percentual,
-        @NotNull
-        @NotBlank
         @Schema(description = "Valor fixo da taxa", example = "123")
         BigDecimal valorFixo
 ) {

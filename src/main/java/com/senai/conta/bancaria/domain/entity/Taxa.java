@@ -14,6 +14,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "taxa", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_taxa_descricao", columnNames = "descricao")}
+)
 public class Taxa {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

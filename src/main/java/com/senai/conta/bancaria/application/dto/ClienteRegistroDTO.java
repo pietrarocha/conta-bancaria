@@ -29,13 +29,13 @@ public record ClienteRegistroDTO(
         @Schema(description = "Conta do cliente")
         ContaResumoDTO contaDTO
 ) {
-    public Cliente toEntity() {
-        return Cliente.builder()
-                .nome(this.nome)
-                .cpf(this.cpf)
-                .senha(this.senha)
-                .contas(new ArrayList<Conta>())
-                .ativo(true)
-                .build();
-    }
+        public Cliente toEntity() {
+                return Cliente.builder()
+                        .nome(this.nome)
+                        .cpf(this.cpf)
+                        .senha(this.senha)
+                        .contas(new ArrayList<Conta>())
+                        .ativo(true)
+                        .build();
+        }
 }
