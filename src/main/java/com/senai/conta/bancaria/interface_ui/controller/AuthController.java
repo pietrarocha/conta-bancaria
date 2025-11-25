@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class AuthController {
                             schema = @Schema(implementation = AuthDTO.LoginRequest.class),
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
-                                          "cpf": 12345678910,
-                                          "senha": "senha"
+                                          "cpf": "00000000000",
+                                          "senha": "admin123"
                                         }
                                     """
                             )
@@ -60,6 +61,7 @@ public class AuthController {
                     )
             }
     )
+    @SecurityRequirements
     @PostMapping("/login")
     public ResponseEntity<AuthDTO.TokenResponse> login(@org.springframework.web.bind.annotation.RequestBody AuthDTO.LoginRequest req) {
         String token = auth.login(req);

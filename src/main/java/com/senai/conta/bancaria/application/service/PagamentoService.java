@@ -62,4 +62,3 @@ public class PagamentoService {
         return PagamentoDTO.fromEntity(pagamentoRepository.findByBoleto(boleto));
     }
 }
-
