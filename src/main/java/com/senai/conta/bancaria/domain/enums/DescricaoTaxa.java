@@ -1,4 +1,4 @@
-package com.senai.conta.bancaria.domain.entity;
+package com.senai.conta.bancaria.domain.enums;
 
 public enum DescricaoTaxa {
     IOF,

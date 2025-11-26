@@ -1,8 +1,7 @@
 package com.senai.conta.bancaria.domain.entity;
 
+import com.senai.conta.bancaria.domain.enums.TipoUsuario;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

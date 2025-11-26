@@ -1,6 +1,6 @@
 package com.senai.conta.bancaria.interface_ui.controller;
 
-import com.senai.conta.bancaria.application.dto.PagamentoDTO;
+import com.senai.conta.bancaria.application.dto.*;
 import com.senai.conta.bancaria.application.service.PagamentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,11 +33,7 @@ public class PagamentoController {
                             schema = @Schema(implementation = PagamentoDTO.class),
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
-                                            "contaDTO": {
-                                                     "tipoConta": "CONTA_POUPANCA",
-                                                     "numero": 1234,
-                                                     "saldo": 1000
-                                             },
+                                            "numeroConta": 1234,
                                              "boleto": "123",
                                              "valorPago": 123,
                                              "taxas": [

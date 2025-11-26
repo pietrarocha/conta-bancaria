@@ -2,7 +2,7 @@ package com.senai.conta.bancaria.domain.repository;
 
 import com.senai.conta.bancaria.domain.entity.Conta;
 import com.senai.conta.bancaria.domain.entity.Pagamento;
-import com.senai.conta.bancaria.domain.entity.StatusPagamento;
+import com.senai.conta.bancaria.domain.enums.StatusPagamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

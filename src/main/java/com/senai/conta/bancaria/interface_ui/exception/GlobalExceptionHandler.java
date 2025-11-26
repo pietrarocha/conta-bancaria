@@ -2,20 +2,16 @@ package com.senai.conta.bancaria.interface_ui.exception;
 
 import com.senai.conta.bancaria.domain.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ControllerAdvice
@@ -148,6 +144,17 @@ public class GlobalExceptionHandler {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.BAD_REQUEST,
                 "Valores negativos não são permitidos",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(BoletoPagoException.class)
+    public ProblemDetail handleGeneralException (BoletoPagoException ex,
+                                                 HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Boleto já foi pago",
                 ex.getMessage(),
                 request.getRequestURI()
         );

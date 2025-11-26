@@ -1,8 +1,8 @@
 package com.senai.conta.bancaria.domain.entity;
 
+import com.senai.conta.bancaria.domain.enums.TipoUsuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

@@ -1,7 +1,7 @@
 package com.senai.conta.bancaria.application.dto;
 
 
-import com.senai.conta.bancaria.domain.entity.TipoConta;
+import com.senai.conta.bancaria.domain.enums.TipoConta;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 

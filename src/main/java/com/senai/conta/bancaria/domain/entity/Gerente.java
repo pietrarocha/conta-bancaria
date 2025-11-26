@@ -1,5 +1,6 @@
 package com.senai.conta.bancaria.domain.entity;
 
+import com.senai.conta.bancaria.domain.enums.TipoUsuario;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Data;

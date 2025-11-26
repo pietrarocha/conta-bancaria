@@ -1,5 +1,6 @@
 package com.senai.conta.bancaria.domain.entity;
 
+import com.senai.conta.bancaria.domain.enums.DescricaoTaxa;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -31,6 +33,6 @@ public class Taxa {
     @Column(precision = 19, scale = 2)
     private BigDecimal valorFixo;
 
-    @ManyToMany(mappedBy = "taxas")
-    private Set<Pagamento> pagamentos;
+    @ManyToMany
+    private Set<Taxa> taxas;
 }

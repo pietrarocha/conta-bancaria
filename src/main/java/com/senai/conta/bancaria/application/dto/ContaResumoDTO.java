@@ -1,5 +1,6 @@
 package com.senai.conta.bancaria.application.dto;
 
+import com.senai.conta.bancaria.domain.enums.TipoConta;
 import com.senai.conta.bancaria.domain.entity.*;
 import com.senai.conta.bancaria.domain.exceptions.TipoDeContaInvalidaException;
 import io.swagger.v3.oas.annotations.media.Schema;

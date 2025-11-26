@@ -8,7 +8,7 @@ import com.senai.conta.bancaria.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta.bancaria.domain.entity.Conta;
 import com.senai.conta.bancaria.domain.entity.ContaCorrente;
 import com.senai.conta.bancaria.domain.entity.ContaPoupanca;
-import com.senai.conta.bancaria.domain.entity.TipoConta;
+import com.senai.conta.bancaria.domain.enums.TipoConta;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.exceptions.RendimentoInvalidoException;
 import com.senai.conta.bancaria.domain.repository.ContaRepository;

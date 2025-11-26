@@ -1,9 +1,8 @@
 package com.senai.conta.bancaria.application.dto;
 
-import com.senai.conta.bancaria.domain.entity.DescricaoTaxa;
+import com.senai.conta.bancaria.domain.enums.DescricaoTaxa;
 import com.senai.conta.bancaria.domain.entity.Taxa;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
