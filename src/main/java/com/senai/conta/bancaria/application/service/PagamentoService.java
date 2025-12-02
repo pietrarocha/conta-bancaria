@@ -1,8 +1,8 @@
 package com.senai.conta.bancaria.application.service;
 
 import com.senai.conta.bancaria.application.dto.PagamentoDTO;
-import com.senai.conta.bancaria.domain.enums.StatusPagamento;
 import com.senai.conta.bancaria.domain.entity.Taxa;
+import com.senai.conta.bancaria.domain.enums.StatusPagamento;
 import com.senai.conta.bancaria.domain.exceptions.BoletoPagoException;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.repository.ContaRepository;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
