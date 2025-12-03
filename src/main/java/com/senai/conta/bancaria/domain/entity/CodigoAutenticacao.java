@@ -27,6 +27,7 @@ public class CodigoAutenticacao {
     @Column(nullable = false)
     private boolean validado;
 
-    @Column(nullable = false)
+    @OneToOne
+    @JoinColumn(name = "cliente_id", foreignKey = @ForeignKey(name = "fk_codigo_cliente"))
     private Cliente cliente;
 }

@@ -2,15 +2,12 @@ package com.senai.conta.bancaria.application.dto;
 
 import com.senai.conta.bancaria.domain.entity.Conta;
 import com.senai.conta.bancaria.domain.entity.Pagamento;
-import com.senai.conta.bancaria.domain.entity.Taxa;
+import com.senai.conta.bancaria.domain.entity.TipoPagamento;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public record PagamentoDTO(
         @Schema(description = "Conta para pagamento", example = "123")
@@ -19,19 +16,18 @@ public record PagamentoDTO(
         @NotBlank
         @Schema(description = "Boleto a ser pago", example = "123")
         String boleto,
-        @Schema(description = "Valor pago", example = "123")
-        BigDecimal valorPago,
-        //TODO: Tipo de pagamento
         @NotNull
-        @Schema(description = "Taxas do pagamento")
-        List<TaxaDTO> taxas
+        @Schema(description = "Tipo de pagamento", example = "LUZ")
+        TipoPagamento tipoPagamento,
+        @Schema(description = "Valor pago", example = "123")
+        BigDecimal valorPago
 ) {
-    public Pagamento toEntity(Conta conta, Set<Taxa> listTaxas) {
+    public Pagamento toEntity(Conta conta) {
         return Pagamento.builder()
                 .conta(conta)
                 .boleto(this.boleto)
+                .tipoPagamento(this.tipoPagamento)
                 .valorPago(this.valorPago)
-                .taxas(new HashSet<>(listTaxas))
                 .build();
     }
 
@@ -39,8 +35,8 @@ public record PagamentoDTO(
         return new PagamentoDTO(
                 pagamento.getConta().getNumero(),
                 pagamento.getBoleto(),
-                pagamento.getValorPago(),
-                pagamento.getTaxas().stream().map(TaxaDTO::fromEntity).toList()
+                pagamento.getTipoPagamento(),
+                pagamento.getValorPago()
         );
     }
 }

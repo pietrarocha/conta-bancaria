@@ -1,6 +1,5 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import com.senai.conta.bancaria.domain.enums.StatusPagamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Data
@@ -31,6 +29,9 @@ public class Pagamento {
     @Column(nullable = false)
     private String boleto;
 
+    @Enumerated(EnumType.STRING)
+    private TipoPagamento tipoPagamento;
+
     @Column(precision = 19, scale = 2)
     private BigDecimal valorPago;
 
@@ -40,11 +41,4 @@ public class Pagamento {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusPagamento status;
-
-    @ManyToMany
-    @JoinTable(name = "pagamento_taxa",
-            joinColumns = @JoinColumn(name = "pagamento_id"),
-            inverseJoinColumns = @JoinColumn(name = "taxa_id")
-    )
-    private Set<Taxa> taxas;
 }

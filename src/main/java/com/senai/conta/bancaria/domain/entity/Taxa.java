@@ -1,7 +1,6 @@
 package com.senai.conta.bancaria.domain.entity;
 
 
-import com.senai.conta.bancaria.domain.enums.DescricaoTaxa;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,17 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
+
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "taxa", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_taxa_descricao", columnNames = "descricao")}
-)
 public class Taxa {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,12 +24,12 @@ public class Taxa {
     @Enumerated(EnumType.STRING)
     private DescricaoTaxa descricao;
 
+    @Enumerated(EnumType.STRING)
+    private List<TipoPagamento> tipoPagamento;
+
     @Column(precision = 10, scale = 4)
     private BigDecimal percentual;
 
     @Column(precision = 19, scale = 2)
     private BigDecimal valorFixo;
-
-    @ManyToMany
-    private Set<Taxa> taxas;
 }

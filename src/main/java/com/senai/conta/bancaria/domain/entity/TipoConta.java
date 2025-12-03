@@ -1,4 +1,4 @@
-package com.senai.conta.bancaria.domain.enums;
+package com.senai.conta.bancaria.domain.entity;
 
 public enum TipoConta {
     CONTA_CORRENTE,

@@ -1,6 +1,5 @@
 package com.senai.conta.bancaria.domain.entity;
 
-import com.senai.conta.bancaria.domain.enums.TipoConta;
 import com.senai.conta.bancaria.domain.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.*;
 import lombok.*;

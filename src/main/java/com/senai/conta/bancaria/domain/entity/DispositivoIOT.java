@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -21,7 +20,6 @@ public class DispositivoIOT {
     private String id;
 
     @Column(nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String codigoSerial;
 
     @Column(nullable = false)
@@ -31,5 +29,6 @@ public class DispositivoIOT {
     private boolean ativo;
 
     @OneToOne
+    @JoinColumn(name = "cliente_id", foreignKey = @ForeignKey(name = "fk_dispositivo_cliente"))
     private Cliente cliente;
 }
