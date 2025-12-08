@@ -24,7 +24,10 @@ public class Taxa {
     @Enumerated(EnumType.STRING)
     private DescricaoTaxa descricao;
 
+    @ElementCollection(targetClass = TipoPagamento.class)
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "taxa_tipo_pagamento", joinColumns = @JoinColumn(name = "taxa_id"))
+    @Column(name = "tipo_pagamento")
     private List<TipoPagamento> tipoPagamento;
 
     @Column(precision = 10, scale = 4)

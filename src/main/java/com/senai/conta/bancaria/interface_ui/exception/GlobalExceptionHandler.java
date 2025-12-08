@@ -159,4 +159,15 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+
+    @ExceptionHandler(DataExpiradaException.class)
+    public ProblemDetail handleDataExpiradaException (DataExpiradaException ex,
+                                                      HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Data expirada",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
 }

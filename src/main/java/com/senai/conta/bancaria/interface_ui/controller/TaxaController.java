@@ -34,7 +34,7 @@ public class TaxaController {
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
                                             "descricao": "IOF",
-                                            "tipoPagamento": ["LUZ", "AGUA"]
+                                            "tipoPagamento": ["LUZ", "AGUA"],
                                             "percentual": 0.1,
                                             "valorFixo": 123
                                          }

@@ -2,18 +2,17 @@ package com.senai.conta.bancaria.application.service;
 
 import com.senai.conta.bancaria.application.dto.PagamentoDTO;
 import com.senai.conta.bancaria.domain.entity.StatusPagamento;
-import com.senai.conta.bancaria.domain.entity.Taxa;
 import com.senai.conta.bancaria.domain.exceptions.BoletoPagoException;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta.bancaria.domain.repository.ContaRepository;
 import com.senai.conta.bancaria.domain.repository.PagamentoRepository;
-import com.senai.conta.bancaria.domain.repository.TaxaRepository;
-import com.senai.conta.bancaria.domain.service.PagamentoDomainService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -21,8 +20,7 @@ import java.util.List;
 public class PagamentoService {
     private final PagamentoRepository pagamentoRepository;
     private final ContaRepository contaRepository;
-    private final TaxaRepository taxaRepository;
-    private final PagamentoDomainService pagamentoDomainService;
+    private final AutenticacaoService autenticacaoService;
 
     public PagamentoDTO registrarPagamento(PagamentoDTO dto) {
         var conta = contaRepository.findByNumeroAndAtivaTrue(dto.numeroConta())
@@ -31,14 +29,9 @@ public class PagamentoService {
             throw new BoletoPagoException();
         }
 
-        var pagamentoEntity = dto.toEntity(conta);
-
-        List<Taxa> taxas = taxaRepository.findByTipoPagamento(dto.tipoPagamento());
-        if(taxas.isEmpty()){
-            throw new EntidadeNaoEncontradaException("Taxa");
-        }
-
-        var pagamento = pagamentoDomainService.pagamento(pagamentoEntity, taxas);
+        var pagamento = dto.toEntity(conta);
+        pagamento.setStatus(StatusPagamento.PROCESSANDO);
+        autenticacaoService.criar(conta.getCliente());
 
         return PagamentoDTO.fromEntity(pagamentoRepository.save(pagamento));
     }

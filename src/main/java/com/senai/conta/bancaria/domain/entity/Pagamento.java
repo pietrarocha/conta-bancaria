@@ -35,7 +35,6 @@ public class Pagamento {
     @Column(precision = 19, scale = 2)
     private BigDecimal valorPago;
 
-    @Column(nullable = false)
     private LocalDateTime dataPagamento;
 
     @Column(nullable = false)
