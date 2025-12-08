@@ -19,7 +19,7 @@ public record ClienteRegistroDTO(
         @NotNull
         @NotBlank
         @Size(min = 11, max = 11)
-        @Schema(description = "Cpf do cliente", example = "87923187533")
+        @Schema(description = "Cpf do cliente", example = "87923187536")
         String cpf,
         @NotNull
         @NotBlank
