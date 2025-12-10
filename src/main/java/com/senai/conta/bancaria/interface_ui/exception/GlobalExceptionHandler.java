@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
                                                                      HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.CONFLICT,
-                "Transferencia para a mesma conta não é permitido",
+                "Transferência para a mesma conta não é permitido",
                 ex.getMessage(),
                 request.getRequestURI()
         );
