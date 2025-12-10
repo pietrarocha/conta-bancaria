@@ -3,7 +3,7 @@ package com.senai.conta.bancaria.application.service;
 import com.senai.conta.bancaria.domain.entity.*;
 import com.senai.conta.bancaria.domain.exceptions.DataExpiradaException;
 import com.senai.conta.bancaria.domain.exceptions.EntidadeNaoEncontradaException;
-import com.senai.conta.bancaria.domain.repository.CodigoAutenticacaoRepository;
+import com.senai.conta.bancaria.domain.repository.AutenticacaoRepository;
 import com.senai.conta.bancaria.domain.repository.PagamentoRepository;
 import com.senai.conta.bancaria.domain.repository.TaxaRepository;
 import com.senai.conta.bancaria.domain.service.PagamentoDomainService;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AutenticacaoService {
-    private final CodigoAutenticacaoRepository autenticacaoRepository;
+    private final AutenticacaoRepository autenticacaoRepository;
     private final PagamentoRepository pagamentoRepository;
     private final TaxaRepository taxaRepository;
     private final PagamentoDomainService pagamentoDomainService;

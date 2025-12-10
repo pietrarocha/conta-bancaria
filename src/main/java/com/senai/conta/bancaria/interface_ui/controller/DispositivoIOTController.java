@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "DispositivoIoT", description = "Gerenciamento de dispositivo IoT dos clientes do banco")
 @RestController
 @RequiredArgsConstructor
-public class DispositivoIoTController {
+public class DispositivoIOTController {
     private final DispositivoIOTService dispositivoIoTService;
 
     @Operation(
